@@ -67,3 +67,30 @@
 
   const y = $('#y'); if (y) y.textContent = new Date().getFullYear();
 })();
+
+/* Carrusel continuo de deportistas: pasa solo, no se frena con el mouse */
+(() => {
+  const rail = document.getElementById('rail');
+  if (!rail || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const items = [...rail.children];
+  items.forEach(li => { const c = li.cloneNode(true); c.setAttribute('aria-hidden', 'true'); c.querySelectorAll('img').forEach(i => i.alt = ''); rail.appendChild(c); });
+  rail.classList.add('is-auto');
+  let pos = rail.scrollLeft, touching = false, last = performance.now();
+  const half = () => rail.scrollWidth / 2;
+  rail.addEventListener('touchstart', () => touching = true, { passive: true });
+  rail.addEventListener('touchend', () => { touching = false; pos = rail.scrollLeft; }, { passive: true });
+  rail.addEventListener('pointerdown', () => { touching = true; });
+  addEventListener('pointerup', () => { if (touching) { touching = false; pos = rail.scrollLeft; } });
+  document.querySelectorAll('[data-dir]').forEach(b => b.addEventListener('click', () => setTimeout(() => pos = rail.scrollLeft, 700)));
+  const tick = now => {
+    const dt = Math.min(now - last, 50); last = now;
+    if (!touching) {
+      pos += dt * 0.045;
+      if (pos >= half()) pos -= half();
+      if (pos < 0) pos += half();
+      rail.scrollLeft = pos;
+    } else if (rail.scrollLeft >= half()) { rail.scrollLeft -= half(); }
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+})();
