@@ -298,7 +298,3 @@ em{font-style:normal;color:var(--lime)}
   .contact__cards{grid-template-columns:1fr}
   .foot__in{grid-template-columns:1fr;gap:12px}
 }
-@media (prefers-reduced-motion:reduce){
-  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
-  .js .reveal{opacity:1;transform:none}
-}
